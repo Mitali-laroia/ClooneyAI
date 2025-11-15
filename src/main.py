@@ -1,18 +1,44 @@
 """Main entry point for Clooney AI."""
 
+from src.config import settings
 from src.workflows import clone_graph
+from src.workflows.nodes import cleanup_browser, cleanup_event_loop, get_event_loop
 
 
 def main() -> None:
 	"""Run the main application."""
 	print("🤖 Welcome to Clooney AI - Website Cloning Tool")
 	print("=" * 60)
+	print("🎯 Phase: Iterative AI-Guided Login")
+	print("=" * 60)
 
 	# Initialize the workflow with state
 	initial_state = {
-		"url": "https://asana.com/",
+		"url": settings.TEST_URL,
 		"status": "initialized",
 		"error": None,
+		# Iterative login fields
+		"current_step": "init",
+		"iteration_count": 0,
+		"last_action": None,
+		"ai_guidance": None,
+		"last_error": None,
+		"step_retry_count": 0,
+		# Credentials
+		"email": settings.ASANA_EMAIL_ID,
+		"password": settings.ASANA_PASSWORD,
+		# Login results
+		"login_successful": None,
+		"login_url": None,
+		"login_screenshot": None,
+		"total_tokens_used": 0,
+		# Browser session
+		"browser_session": None,
+		# Page data
+		"current_dom": None,
+		"current_css": None,
+		"current_page_url": None,
+		# Future scraping fields
 		"dom": None,
 		"dom_simplified": None,
 		"css": None,
@@ -20,34 +46,46 @@ def main() -> None:
 		"screenshots": None,
 	}
 
-	print(f"\n📍 Target URL: {initial_state['url']}")
-	print("🔄 Starting scraping process...\n")
+	print(f"\n📍 Login URL: {initial_state['url']}")
+	print(f"📧 Email: {settings.ASANA_EMAIL_ID}")
+	print("🔄 Starting iterative login process (max 10 iterations)...\n")
 
-	# Invoke the workflow
-	result = clone_graph.invoke(initial_state)
+	result = None
+	try:
+		# Invoke the workflow
+		result = clone_graph.invoke(initial_state)
 
-	# Display results
-	print("=" * 60)
-	print(f"✅ Status: {result['status'].upper()}")
-	print("=" * 60)
+		# Display results
+		print("\n" + "=" * 60)
+		print(f"📊 FINAL RESULTS")
+		print("=" * 60)
+		print(f"Status: {result['status']}")
+		print(f"Final Step: {result['current_step']}")
+		print(f"Iterations: {result['iteration_count']}")
+		print(f"Total Tokens Used: {result['total_tokens_used']:,}")
 
-	if result["error"]:
-		print(f"\n❌ Error: {result['error']}")
-	else:
-		print("\n📊 Scraped Data:")
-		print(f"  📄 Full DOM: {len(result['dom']) if result['dom'] else 0:,} chars")
-		print(
-			f"  🧹 Simplified DOM: {len(result['dom_simplified']) if result['dom_simplified'] else 0:,} chars"
-		)
-		print(f"  🎨 CSS: {len(result['css']) if result['css'] else 0:,} chars")
+		if result["error"]:
+			print(f"\n❌ Error: {result['error']}")
+		elif result.get("login_successful"):
+			print("\n✅ Login Results:")
+			print(f"  🎉 Login Successful!")
+			print(f"  🌐 Post-Login URL: {result['login_url']}")
+			print(f"  📸 Screenshot: {result['login_screenshot']}")
+			print(f"  📝 Last Action: {result['last_action']}")
+			print("\n✨ Ready to scrape dashboard!")
+		else:
+			print("\n❌ Login Failed")
+			if result.get("last_action"):
+				print(f"   Last Action: {result['last_action']}")
 
-		if result["screenshots"]:
-			print(f"\n📸 Screenshots captured:")
-			for viewport, path in result["screenshots"].items():
-				print(f"  • {viewport.capitalize()}: {path}")
-
-		print(f"\n💾 Data saved to: {result['output_file']}")
-		print("\n✨ Ready for AI processing!")
+	finally:
+		# Clean up browser and event loop
+		print("\n🧹 Cleaning up resources...")
+		loop = get_event_loop()
+		if result and result.get("browser_session"):
+			loop.run_until_complete(cleanup_browser(result))
+		cleanup_event_loop()
+		print("✅ Cleanup complete")
 
 
 if __name__ == "__main__":

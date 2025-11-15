@@ -4,6 +4,8 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+from src.config import settings
+
 
 def save_scraped_data(
 	url: str,
@@ -11,7 +13,7 @@ def save_scraped_data(
 	css: str,
 	dom_simplified: str | None = None,
 	screenshots: dict[str, str] | None = None,
-	output_dir: str = "output",
+	output_dir: str | None = None,
 ) -> str:
 	"""Save scraped DOM, CSS, and screenshots to a JSON file.
 
@@ -21,11 +23,15 @@ def save_scraped_data(
 		css: The CSS content
 		dom_simplified: Simplified/cleaned DOM
 		screenshots: Dictionary of viewport -> screenshot path
-		output_dir: Directory to save the file
+		output_dir: Directory to save the file (defaults to settings.OUTPUT_DIR)
 
 	Returns:
 		Path to the saved file
 	"""
+	# Use settings default if not provided
+	if output_dir is None:
+		output_dir = settings.OUTPUT_DIR
+
 	# Create output directory
 	output_path = Path(output_dir)
 	output_path.mkdir(parents=True, exist_ok=True)

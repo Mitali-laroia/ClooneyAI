@@ -4,6 +4,8 @@ from pathlib import Path
 
 from playwright.async_api import async_playwright
 
+from src.config import settings
+
 # Viewport configurations for different devices
 VIEWPORTS = {
 	"mobile": {"width": 375, "height": 812, "device_scale_factor": 2},  # iPhone 12/13
@@ -12,16 +14,20 @@ VIEWPORTS = {
 }
 
 
-async def scrape_page(url: str, screenshot_dir: str = "output/screenshots") -> dict:
+async def scrape_page(url: str, screenshot_dir: str | None = None) -> dict:
 	"""Scrape a webpage and extract DOM, CSS, and screenshots.
 
 	Args:
 		url: The URL to scrape
-		screenshot_dir: Directory to save screenshots
+		screenshot_dir: Directory to save screenshots (defaults to settings.SCREENSHOT_DIR)
 
 	Returns:
 		Dictionary containing scraped data
 	"""
+	# Use settings default if not provided
+	if screenshot_dir is None:
+		screenshot_dir = settings.SCREENSHOT_DIR
+
 	# Create screenshot directory
 	screenshot_path = Path(screenshot_dir)
 	screenshot_path.mkdir(parents=True, exist_ok=True)

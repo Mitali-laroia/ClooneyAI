@@ -11,4 +11,5 @@ setup:
 	fi
 	@echo "Running uv sync..."
 	@uv sync
+	@uv run playwright install
 	@echo "Setup complete!"
