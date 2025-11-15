@@ -2,6 +2,7 @@
 
 from langgraph.graph import END, START, StateGraph
 
+from src.workflows.nodes import scraper_node_sync
 from src.workflows.state import CloneState
 
 
@@ -14,8 +15,12 @@ def create_clone_workflow() -> StateGraph:
 	# Initialize the graph with the state schema
 	workflow = StateGraph(CloneState)
 
-	# Add edges from START to END
-	workflow.add_edge(START, END)
+	# Add nodes
+	workflow.add_node("scraper", scraper_node_sync)
+
+	# Add edges
+	workflow.add_edge(START, "scraper")
+	workflow.add_edge("scraper", END)
 
 	# Compile the graph
 	return workflow.compile()
