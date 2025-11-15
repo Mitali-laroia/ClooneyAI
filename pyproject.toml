@@ -1,0 +1,199 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "clooney-ai"
+version = "0.1.0"
+description = "Clone any website!!"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pydantic>=2.9.0",
+    "mypy>=1.18.2",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "python-dotenv>=1.0.0",
+]
+authors = [
+    {name = "Mitali Laroia", email = "mitalilaroia3@gmail.com"}
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "pytest>=7.0.0",
+    "pytest-django>=4.0.0",
+    "coverage>=7.0.0",
+]
+
+[project.scripts]
+app = "src.main:main"
+
+[tool.hatch.build]
+sources = ["."]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--verbose",
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "slow: Slow tests",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+fix = true  # Enable auto-fixing
+show-fixes = true  # Show what fixes were applied
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "N",   # pep8-naming
+    "D",   # pydocstyle
+    "T20", # flake8-print
+    "SIM", # flake8-simplify
+    "RET", # flake8-return
+    "ARG", # flake8-unused-arguments
+    "PIE", # flake8-pie
+    "TCH", # flake8-type-checking
+    "ERA", # eradicate
+    "PD",  # pandas-vet
+    "PGH", # pygrep-hooks
+    "PL",  # pylint
+    "TRY", # tryceratops
+    "FLY", # flynt
+    "NPY", # numpy
+    "A",   # flake8-builtins
+    "COM", # flake8-commas
+    "C90", # mccabe
+    "DJ",  # flake8-django
+    "EM",  # flake8-errmsg
+    "EXE", # flake8-executable
+    "FA",  # flake8-future-annotations
+    "ISC", # flake8-implicit-str-concat
+    "ICN", # flake8-import-conventions
+    "G",   # flake8-logging-format
+    "INP", # flake8-no-pep420
+    "PTH", # flake8-use-pathlib
+    "Q",   # flake8-quotes
+    "RSE", # flake8-raise
+    "RUF", # ruff-specific rules
+    "SLF", # flake8-self
+    "SLOT", # flake8-slots
+    "TID", # flake8-tidy-imports
+    "TCH", # flake8-type-checking
+    "INT", # flake8-gettext
+    "ICN", # flake8-import-conventions
+    "LOG", # flake8-logging
+    "FBT", # flake8-boolean-trap
+    "A003", # flake8-builtins
+    "A001", # flake8-builtins
+    "A002", # flake8-builtins
+]
+ignore = [
+    "W191", # Indentation contains tabs
+    "PGH003", # Use specific rule codes when ignoring type issues
+    "PGH003", # Unused function argument: `self`
+    "TRY003", # Avoid specifying long messages outside the exception class
+    "EM102", # Exception must not use an f-string literal, assign to variable first
+    "PLW2901", # `for` loop variable overwritten by assignment target
+    "T201", # `print` found
+    "D206", # Docstring should be indented with spaces, not tabs
+    "D205", # 1 blank line required between summary line and description
+    "D401", # First line of docstring should be in imperative mood
+    "D104", # Missing docstring in public package
+    "D100", # Missing docstring in public module
+    "FA102", # Missing `from __future__ import annotations`, but uses PEP 604 union
+    "D102", # Missing docstring in public method
+    "D107", # Missing docstring in `__init__`
+    "INP001", # File is part of an implicit namespace package. Add an `__init__.py`
+    "D101", # Missing docstring in public class
+    "PLR2004", # Magic value used in comparison, consider replacing with a constant variable
+    "PTH108", # `os.unlink()` should be replaced by `Path.unlink()`
+    "D103", # Missing docstring in public function
+    "D400", # First line should end with a period
+    "D415", # First line should end with a period, question mark, or exclamation point
+    "PLR0915", # Too many statements
+    "ARG001", # Unused function argument
+    "D200", # One-line docstring should fit on one line
+    "E101", # Indentation contains mixed spaces and tabs
+    "E501", # Line too long
+    "PLR0913", # Too many arguments in function definition
+    "FBT001", # Boolean-typed positional argument in function definition
+    "SIM108", # Use ternary operator instead of if-else-block
+    "PTH123", # `open()` should be replaced by `Path.open()`
+    "TRY004", # Prefer `TypeError` exception for invalid type
+    "EM101", # Exception must not use a string literal, assign to variable first
+    "PLW0603", # Using the global statement to update variable is discouraged
+    "D105", # Missing docstring in magic method
+    "UP035", # `typing.List` is deprecated, use `list` instead
+    "ERA001", # Found commented-out code
+    "UP006", # Use `list` instead of `List` for type annotation
+    "A001", # Variable is shadowing a Python builtin
+    "N806", # Variable in function should be lowercase
+    "B904", # Within an `except` clause, raise exceptions with `raise ... from err`
+    "TRY002", # Create your own exception
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "tab"
+line-ending = "auto"
+skip-magic-trailing-comma = false
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+force-sort-within-sections = true
+split-on-trailing-comma = true
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pylint]
+max-args = 5
+max-branches = 12
+max-returns = 6
+max-statements = 50
